@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+:root {
+  --brand-50: #fef2f2;
+  --brand-100: #fee2e2;
+  --brand-500: #d92d2a;
+  --brand-600: #b71f1e;
+  --brand-700: #991b1b;
+  --neutral-0: #ffffff;
+  --neutral-50: #fafafa;
+  --neutral-100: #f4f4f5;
+  --neutral-200: #e4e4e7;
+  --neutral-500: #71717a;
+  --neutral-600: #52525b;
+  --neutral-900: #18181b;
+  --neutral-950: #09090b;
+  --surface-page: var(--neutral-0);
+  --surface-subtle: var(--neutral-50);
+  --surface-muted: var(--neutral-100);
+  --surface-dark: var(--neutral-950);
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --border-light: var(--neutral-200);
+  --brand-angle: -28deg;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--text-primary);
+  background: var(--surface-page);
+  font-family: var(--font-inter), Arial, sans-serif;
+}
+a { text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+:focus-visible { outline: 3px solid rgb(183 31 30 / .32); outline-offset: 3px; }
+
+.font-display { font-family: var(--font-jakarta), Arial, sans-serif; }
+.site-container { width: min(100% - 40px, 1200px); margin-inline: auto; }
+.site-container-wide { width: min(100% - 40px, 1360px); margin-inline: auto; }
+.section { padding-block: clamp(3.5rem, 8vw, 7.5rem); }
+.eyebrow { margin: 0 0 .75rem; color: var(--brand-600); font-size: .75rem; font-weight: 800; letter-spacing: .14em; }
+.eyebrow-light { color: #fecaca; }
+.section-title { max-width: 760px; margin: 0; font-family: var(--font-jakarta), Arial, sans-serif; font-size: clamp(2rem, 3vw, 3rem); font-weight: 700; letter-spacing: -.05em; line-height: 1.08; }
+.section-copy { max-width: 680px; margin: 1.25rem 0 0; color: var(--text-secondary); font-size: 1.0625rem; line-height: 1.7; }
+.diagonal { position: relative; overflow: hidden; }
+.diagonal::after { position: absolute; right: -5rem; bottom: -7rem; width: 16rem; height: 1px; background: var(--brand-500); content: ""; transform: rotate(var(--brand-angle)); transform-origin: right; }
+.skip-link { position: fixed; z-index: 100; top: 1rem; left: 1rem; padding: .75rem 1rem; border-radius: .625rem; color: white; background: var(--brand-600); transform: translateY(-180%); }
+.skip-link:focus { transform: translateY(0); }
+
+@media (max-width: 639px) { .site-container, .site-container-wide { width: min(100% - 40px, 1200px); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

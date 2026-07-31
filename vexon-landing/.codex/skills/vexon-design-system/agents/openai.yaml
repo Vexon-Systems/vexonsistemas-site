@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vexon Design System"
+  short_description: "Aplica o design e UX da Vexon."
+  default_prompt: "Use $vexon-design-system para revisar esta p�gina da Vexon."
