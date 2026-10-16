@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, inView } from "motion";
+import { animate, inView, stagger } from "motion";
 import { useReducedMotion } from "motion/react";
 import { useEffect } from "react";
 
@@ -27,14 +27,30 @@ export function SolutionPageMotion() {
           { duration: 0.48, ease: "easeOut" },
         );
         controls.add(control);
-        return () => control.stop();
+        // Let the entrance finish when scrolling quickly.
       },
       { margin: "0px 0px -12% 0px" },
     );
 
+    const stopGantt = inView(
+      "[data-motion-gantt]",
+      (element) => {
+        const steps = element.querySelectorAll<HTMLElement>("[data-motion-gantt-step]");
+        const control = animate(
+          steps,
+          { opacity: [0, 1], transform: ["translateX(-14px)", "translateX(0px)"] },
+          { delay: stagger(0.1), duration: 0.38, ease: "easeOut" },
+        );
+        controls.add(control);
+        // Let the entrance finish when scrolling quickly.
+      },
+      { margin: "0px 0px -16% 0px" },
+    );
+
     return () => {
-      controls.forEach((control) => control.stop());
+      controls.forEach((control) => control.complete());
       stop();
+      stopGantt();
     };
   }, [reducedMotion]);
 

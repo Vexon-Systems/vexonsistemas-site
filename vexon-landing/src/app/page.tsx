@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   ArrowRight,
   Activity,
@@ -21,7 +22,8 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { HomeMotion } from "@/components/home/home-motion";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SectionHeader } from "@/components/shared/section-header";
-import { ProcessPath } from "@/components/shared/process-path";
+import { ServiceGantt } from "@/components/shared/service-gantt";
+import { JsonLd } from "@/components/seo/json-ld";
 import { TelemetryVisual } from "@/components/shared/telemetry-visual";
 import { VexonAccordion } from "@/components/ui/accordion";
 import { BentoCard, BentoGrid } from "@/components/magicui/bento-grid";
@@ -29,23 +31,16 @@ import { getWhatsAppUrl } from "@/config/site";
 import { projects } from "@/content/projects";
 import { services } from "@/content/services";
 
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: "/" },
+};
+
 const challenges = [
   ["Caos de informação", "Informações espalhadas entre papéis, planilhas e WhatsApp."],
   ["Esforço manual", "Tarefas repetitivas consomem tempo da equipe todos os dias."],
   ["Gestão limitada", "Vendas, clientes ou processos são difíceis de acompanhar."],
   ["Invisibilidade digital", "Clientes têm dificuldade para encontrar ou entender seus serviços."],
-] as const;
-const process = [
-  ["01", "Descoberta", "Entendemos o negócio, o problema, os usuários e o resultado esperado."],
-  ["02", "Proposta", "Definimos solução, escopo, investimento, prazo e responsabilidades."],
-  ["03", "Planejamento", "Organizamos arquitetura, conteúdo, funcionalidades e etapas de entrega."],
-  [
-    "04",
-    "Desenvolvimento",
-    "Construímos em ciclos curtos, com comunicação e demonstrações frequentes.",
-  ],
-  ["05", "Validação", "Você acompanha, testa e aprova antes da publicação ou implantação."],
-  ["06", "Continuidade", "Quando necessário, definimos suporte, manutenção e evolução."],
 ] as const;
 const faqs = [
   [
@@ -111,8 +106,19 @@ export default function Home() {
     <>
       <SiteHeader />
       <main id="conteudo-principal">
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map(({ question, answer }) => ({
+              "@type": "Question",
+              name: question,
+              acceptedAnswer: { "@type": "Answer", text: answer },
+            })),
+          }}
+        />
         <HomeMotion />
-        <section className="diagonal relative isolate flex min-h-[calc(100svh-72px)] items-center overflow-hidden bg-zinc-950 py-16 text-white sm:py-20">
+        <section data-primary-hero className="diagonal relative isolate flex min-h-[calc(100svh-72px)] items-center overflow-hidden bg-zinc-950 py-16 text-white sm:py-20">
           <Image
             fill
             priority
@@ -122,13 +128,13 @@ export default function Home() {
             className="-z-20 object-cover object-[66%_center] md:object-center"
           />
           <div
-            className="absolute inset-0 -z-10 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-zinc-950/10"
+            className="absolute inset-0 -z-10 bg-gradient-to-r from-zinc-950/95 via-zinc-950/85 to-zinc-950/65 md:from-zinc-950 md:via-zinc-950/85 md:to-zinc-950/10"
             aria-hidden="true"
           />
           <div className="site-container relative z-10 w-full" data-home-hero-copy>
             <div className="max-w-2xl">
-              <h1 className="max-w-3xl font-display text-[clamp(2.8rem,5vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-.065em]">
-                Tecnologia para organizar, fortalecer e fazer sua empresa crescer
+              <h1 className="max-w-3xl font-display text-[clamp(2.35rem,5vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-.065em]">
+                Sites e sistemas para sua empresa evoluir
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
                 A Vexon cria sites, lojas virtuais e sistemas sob medida para pequenas empresas que
@@ -137,6 +143,7 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
+                  data-conversion-event="hero_primary_click"
                   className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-[var(--brand-600)] px-5 font-semibold transition hover:bg-[var(--brand-700)] sm:w-auto"
                 >
                   <MessageCircle size={18} aria-hidden="true" /> Conversar sobre meu projeto
@@ -234,6 +241,7 @@ export default function Home() {
                             : "Entender meu sistema"
                     }
                     description={service.description}
+                    conversionDetail={service.slug}
                     href={`/solucoes/${service.slug}`}
                     Icon={Icon}
                     name={service.shortTitle}
@@ -241,6 +249,55 @@ export default function Home() {
                   />
                 );
               })}
+            </BentoGrid>
+          </div>
+        </section>
+        <section className="section bg-zinc-950 text-white" data-home-section>
+          <div className="site-container">
+            <SectionHeader
+              theme="dark"
+              eyebrow="O QUE ESTAMOS CONSTRUINDO"
+              title="Projetos que demonstram nossa capacidade"
+              description="Apresentamos produtos próprios e projetos em desenvolvimento com transparência sobre seu estágio atual."
+            />
+            <BentoGrid className="mt-10 md:auto-rows-auto">
+              {projects.map((project, index) => (
+                <article
+                  className={`overflow-hidden border border-white/15 bg-white/5 transition duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/[.08] hover:shadow-[0_18px_42px_rgb(0_0_0_/_0.24)] motion-reduce:transform-none motion-reduce:transition-none ${index === 0 ? "md:col-span-2 md:grid md:grid-cols-[.9fr_1.1fr]" : index === 1 ? "md:col-span-1" : "md:col-span-3 md:grid md:grid-cols-[.9fr_1.1fr]"}`}
+                  data-motion-stagger
+                  key={project.slug}
+                >
+                  {project.image ? (
+                    <Image
+                      src={project.image}
+                      alt={`Interface do projeto ${project.name}`}
+                      width={800}
+                      height={450}
+                      className={`w-full object-cover ${index === 0 ? "h-48 md:h-full" : "h-40"}`}
+                    />
+                  ) : (
+                    <TelemetryVisual />
+                  )}
+                  <div className={index === 2 ? "flex flex-col justify-center p-6 sm:p-8" : "p-6"}>
+                    <p className="text-xs font-bold uppercase tracking-[.12em] text-zinc-400">
+                      {project.category}
+                    </p>
+                    <p className="mt-2 w-fit self-start rounded-full bg-red-950 px-2.5 py-1 text-xs text-red-200">
+                      {project.status}
+                    </p>
+                    <h3 className="mt-5 font-display text-2xl font-bold">{project.name}</h3>
+                    <p className="mt-3 text-sm leading-6 text-zinc-300">{project.description}</p>
+                    <Link
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-red-200"
+                      data-conversion-detail={project.slug}
+                      data-conversion-event="project_open"
+                      href={`/projetos/${project.slug}`}
+                    >
+                      Conhecer o projeto <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                </article>
+              ))}
             </BentoGrid>
           </div>
         </section>
@@ -274,7 +331,7 @@ export default function Home() {
               eyebrow="COMO TRABALHAMOS"
               title="Um processo claro do diagnóstico à evolução"
             />
-            <ProcessPath steps={process} variant="timeline" />
+            <ServiceGantt variant="solid" />
           </div>
         </section>
         <section className="section bg-zinc-100" data-home-section>
@@ -304,57 +361,12 @@ export default function Home() {
             </ol>
           </div>
         </section>
-        <section className="section bg-zinc-950 text-white" data-home-section>
-          <div className="site-container">
-            <SectionHeader
-              eyebrow="O QUE ESTAMOS CONSTRUINDO"
-              title="Projetos que demonstram nossa capacidade"
-              description="Apresentamos produtos próprios e projetos em desenvolvimento com transparência sobre seu estágio atual."
-            />
-            <BentoGrid className="mt-10 md:auto-rows-[19rem]">
-              {projects.map((project, index) => (
-                <article
-                  className={`overflow-hidden border border-white/15 bg-white/5 transition duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/[.08] hover:shadow-[0_18px_42px_rgb(0_0_0_/_0.24)] motion-reduce:transform-none motion-reduce:transition-none ${index === 0 ? "md:col-span-2 md:grid md:grid-cols-[.9fr_1.1fr]" : index === 1 ? "md:col-span-1" : "md:col-span-3 md:grid md:grid-cols-[.9fr_1.1fr]"}`}
-                  key={project.slug}
-                >
-                  {project.image ? (
-                    <Image
-                      src={project.image}
-                      alt={`Interface do projeto ${project.name}`}
-                      width={800}
-                      height={450}
-                      className={`w-full object-cover ${index === 0 ? "h-48 md:h-full" : "h-40"}`}
-                    />
-                  ) : (
-                    <TelemetryVisual />
-                  )}
-                  <div className={index === 2 ? "flex flex-col justify-center p-6 sm:p-8" : "p-6"}>
-                    <p className="text-xs font-bold uppercase tracking-[.12em] text-zinc-400">
-                      {project.category}
-                    </p>
-                    <p className="mt-2 w-fit self-start rounded-full bg-red-950 px-2.5 py-1 text-xs text-red-200">
-                      {project.status}
-                    </p>
-                    <h3 className="mt-5 font-display text-2xl font-bold">{project.name}</h3>
-                    <p className="mt-3 text-sm leading-6 text-zinc-300">{project.description}</p>
-                    <Link
-                      className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-red-200"
-                      href={`/projetos/${project.slug}`}
-                    >
-                      Conhecer o projeto <ArrowRight size={16} />
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </BentoGrid>
-          </div>
-        </section>
         <section className="section" data-home-section>
           <div className="site-container grid items-center gap-12 lg:grid-cols-[.9fr_1.1fr]">
             <div className="relative pb-10 pr-8 sm:pr-12">
               <Image
                 className="h-[25rem] w-full rounded-[20px] object-cover"
-                src="/assets/close-up-people-working-office.jpg"
+                src="/assets/close-up-people-working-office-2400.webp"
                 alt="Pessoas trabalhando em conjunto"
                 width={900}
                 height={600}
@@ -426,6 +438,7 @@ export default function Home() {
                 return (
                   <li
                     className="group flex min-h-32 flex-col items-center justify-center border border-zinc-200 bg-white p-5 text-center transition duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-[0_14px_28px_rgb(0_0_0_/_0.08)] motion-reduce:transform-none motion-reduce:transition-none"
+                    data-motion-stagger
                     key={item}
                   >
                     <span className="grid size-11 place-items-center rounded-full bg-red-50 text-[var(--brand-600)] transition duration-300 group-hover:scale-110 group-hover:bg-[var(--brand-600)] group-hover:text-white motion-reduce:transform-none">

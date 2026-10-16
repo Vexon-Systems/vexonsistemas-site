@@ -23,6 +23,7 @@ export function PageHero({
 }: PageHeroProps) {
   return (
     <section
+      data-primary-hero
       className={`diagonal bg-zinc-950 text-white ${visual ? "pb-16 pt-24 sm:pb-20 sm:pt-28" : "pb-20 pt-36 sm:pb-28 sm:pt-44"}`}
       data-motion-target={motionTarget}
     >
@@ -43,13 +44,15 @@ export function PageHero({
           <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">{description}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
-              className="inline-flex min-h-12 items-center gap-2 rounded-[10px] bg-[var(--brand-600)] px-5 font-semibold text-white transition hover:bg-[var(--brand-700)]"
+              className="inline-flex min-h-12 items-center gap-2 rounded-[10px] bg-(--brand-600) px-5 font-semibold text-white transition hover:bg-(--brand-700)"
+              data-conversion-event="solution_cta_click"
               href={primaryHref}
             >
               <ArrowRight size={18} aria-hidden="true" /> Conversar sobre meu projeto
             </a>
             <a
               className="inline-flex min-h-12 items-center gap-2 rounded-[10px] border border-white/20 px-5 font-semibold text-white transition hover:bg-white/10"
+              data-conversion-event="whatsapp_nav_click"
               href={getWhatsAppUrl(message)}
             >
               <MessageCircle size={18} aria-hidden="true" /> WhatsApp

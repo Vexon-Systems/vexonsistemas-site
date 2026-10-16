@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: ServiceRouteProps): Promise<M
 
   if (!service) return {};
 
-  const path = "/solucoes/" + service.slug;
+  const path = "/solucoes/" + service.slug + "/";
 
   return {
     title: service.seoTitle,

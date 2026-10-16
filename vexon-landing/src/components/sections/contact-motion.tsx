@@ -36,7 +36,7 @@ export function ContactMotion() {
           { duration: 0.48, ease: "easeOut" },
         );
         controls.add(control);
-        return () => control.stop();
+        // Let the entrance finish when scrolling quickly.
       },
       { margin: "0px 0px -12% 0px" },
     );

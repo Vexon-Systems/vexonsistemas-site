@@ -34,7 +34,7 @@ body {
 }
 a { text-decoration: none; }
 button, input, select, textarea { font: inherit; }
-:focus-visible { outline: 3px solid rgb(183 31 30 / .32); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--brand-500); outline-offset: 3px; }
 
 .font-display { font-family: var(--font-jakarta), Arial, sans-serif; }
 .site-container { width: min(100% - 40px, 1200px); margin-inline: auto; }
@@ -53,3 +53,5 @@ button, input, select, textarea { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+section[id], main[id] { scroll-margin-top: 6rem; }

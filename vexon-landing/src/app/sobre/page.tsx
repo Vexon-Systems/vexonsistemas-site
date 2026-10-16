@@ -11,7 +11,7 @@ import { SectionHeader } from "@/components/shared/section-header";
 export const metadata: Metadata = {
   title: "Sobre a Vexon",
   description: "Conheça a Vexon, empresa de tecnologia de Ituiutaba criada para resolver problemas reais.",
-  alternates: { canonical: "/sobre" },
+  alternates: { canonical: "/sobre/" },
 };
 
 const principles = [

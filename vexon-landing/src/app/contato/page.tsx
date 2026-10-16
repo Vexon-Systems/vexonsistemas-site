@@ -10,12 +10,12 @@ import { getWhatsAppUrl, siteConfig } from "@/config/site";
 export const metadata: Metadata = {
   title: "Contato",
   description: "Converse com a Vexon sobre sites, lojas virtuais e sistemas em Ituiutaba e região.",
-  alternates: { canonical: "/contato" },
+  alternates: { canonical: "/contato/" },
 };
 
 export default function ContactPage() {
-  const phoneHref = "tel:+553498994454";
-  const phoneLabel = "+55 (34) 9899-4454";
+  const phoneHref = `tel:${siteConfig.telephone}`;
+  const phoneLabel = siteConfig.telephoneDisplay;
 
   return (
     <>

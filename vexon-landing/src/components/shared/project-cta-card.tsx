@@ -12,7 +12,7 @@ export function ProjectCtaCard() {
           Pronto para elevar seu projeto ao <span className="text-red-200 italic">nível Vexon?</span>
         </h2>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-[var(--brand-600)] px-5 font-semibold transition hover:bg-[var(--brand-700)]" href="/contato">
+          <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-(--brand-600) px-5 font-semibold transition hover:bg-(--brand-700)" href="/contato">
             Começar um projeto <ArrowRight size={17} aria-hidden="true" />
           </Link>
           <Link className="inline-flex min-h-12 items-center justify-center rounded-[10px] border border-white/30 px-5 font-semibold transition hover:border-white hover:bg-white hover:text-zinc-950" href="/projetos">

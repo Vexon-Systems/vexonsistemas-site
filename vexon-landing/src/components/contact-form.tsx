@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
-import { useSubmit } from "@formspree/react";
+import { useCallback, useId, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { trackConversion } from "@/lib/analytics";
+import { contactSchema, type ContactValues } from "@/lib/contact-schema";
+import { Turnstile } from "@/components/turnstile";
+import { getWhatsAppUrl } from "@/config/site";
 
-const formId = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID ?? "";
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 const fieldClass =
   "mt-2 min-h-12 w-full rounded-[10px] border border-zinc-300 bg-white px-3 py-2.5 text-zinc-900 outline-none transition focus:border-[var(--brand-600)] focus:ring-3 focus:ring-red-900/15";
 
@@ -26,30 +27,20 @@ function formatBrazilPhone(value: string) {
   return `(${areaCode}) ${localNumber.slice(0, firstPartLength)}-${localNumber.slice(firstPartLength)}`;
 }
 
-const contactSchema = z.object({
-  name: z.string().trim().min(2, "Informe seu nome."),
-  company: z.string().trim().optional(),
-  phone: z
-    .string()
-    .trim()
-    .refine((value) => value.replace(/\D/g, "").length >= 10, "Informe um WhatsApp com DDD."),
-  email: z.string().trim().email("Informe um e-mail válido."),
-  solution: z.string().min(1, "Selecione uma solução."),
-  message: z.string().trim().min(12, "Conte um pouco mais sobre a sua necessidade."),
-  _gotcha: z.string().optional(),
-});
-type ContactValues = z.infer<typeof contactSchema>;
-
 export function ContactForm({ initialSolution = "" }: { initialSolution?: string }) {
-  const [status, setStatus] = useState<"idle" | "success" | "error" | "configuration">("idle");
-  const submit = useSubmit<ContactValues>(formId || "unconfigured", {
-    extraData: { subject: "Novo contato pelo site da Vexon" },
-  });
+  const formId = useId();
+  const [status, setStatus] = useState<
+    "idle" | "success" | "error" | "configuration" | "verification"
+  >("idle");
+  const [turnstileInstance, setTurnstileInstance] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+  const parsedInitialSolution = contactSchema.shape.solution.safeParse(initialSolution);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -57,41 +48,79 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
       company: "",
       phone: "",
       email: "",
-      solution: initialSolution,
+      solution: parsedInitialSolution.success ? parsedInitialSolution.data : undefined,
       message: "",
       _gotcha: "",
+      turnstileToken: "",
     },
   });
 
+  const handleTurnstileToken = useCallback(
+    (token: string) => setValue("turnstileToken", token, { shouldValidate: true }),
+    [setValue],
+  );
+  const handleVerificationError = useCallback(() => setStatus("error"), []);
+
   async function onSubmit(data: ContactValues) {
-    if (!formId) {
+    if (!turnstileSiteKey) {
       setStatus("configuration");
       return;
     }
+    if (!data.turnstileToken) {
+      setStatus("verification");
+      return;
+    }
+
     setStatus("idle");
     try {
-      const response = await submit(data);
-      if (response.kind === "success") {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
         reset();
+        setHasStarted(false);
         setStatus("success");
         trackConversion("contact_form_submit");
-      } else setStatus("error");
+      } else {
+        const result: unknown = await response.json().catch(() => null);
+        const isConfigurationError =
+          typeof result === "object" &&
+          result !== null &&
+          "error" in result &&
+          result.error === "configuration";
+        setStatus(isConfigurationError ? "configuration" : "error");
+      }
     } catch {
       setStatus("error");
+    } finally {
+      setValue("turnstileToken", "");
+      setTurnstileInstance((instance) => instance + 1);
     }
   }
-  const error = (message?: string) =>
-    message && <span className="mt-1 block text-xs font-medium text-red-700">{message}</span>;
+  const error = (field: keyof ContactValues, message?: string) =>
+    message && (
+      <span id={`${formId}-${field}-error`} className="mt-1 block text-xs font-medium text-red-700">
+        {message}
+      </span>
+    );
 
   return (
     <form
       noValidate
       onSubmit={handleSubmit(onSubmit)}
+      onFocusCapture={() => {
+        if (hasStarted) return;
+        setHasStarted(true);
+        trackConversion("contact_form_start");
+      }}
       className="rounded-[14px] border border-zinc-200 bg-white p-5 text-zinc-900 shadow-[0_12px_32px_rgb(0_0_0_/_0.10)] sm:p-7"
     >
       <input
         aria-hidden="true"
-        className="hidden"
+        className="absolute -left-[10000px] size-px overflow-hidden opacity-0"
         tabIndex={-1}
         autoComplete="off"
         {...register("_gotcha")}
@@ -101,52 +130,66 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
       </h3>
       <div className="mt-5 grid gap-5 sm:grid-cols-2">
         <label className="text-sm font-semibold">
-          Nome
+          Nome (obrigatório)
           <input
             className={fieldClass}
             autoComplete="name"
             aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? `${formId}-name-error` : undefined}
+            required
             {...register("name")}
           />
-          {error(errors.name?.message)}
+          {error("name", errors.name?.message)}
         </label>
         <label className="text-sm font-semibold">
-          Empresa
-          <input className={fieldClass} autoComplete="organization" {...register("company")} />
+          Empresa (opcional)
+          <input
+            className={fieldClass}
+            autoComplete="organization"
+            aria-invalid={Boolean(errors.company)}
+            aria-describedby={errors.company ? `${formId}-company-error` : undefined}
+            {...register("company")}
+          />
+          {error("company", errors.company?.message)}
         </label>
         <label className="text-sm font-semibold">
-          WhatsApp
+          WhatsApp (obrigatório)
           <input
             className={fieldClass}
             inputMode="tel"
             autoComplete="tel"
             placeholder="(34) 99999-9999"
             aria-invalid={Boolean(errors.phone)}
+            aria-describedby={errors.phone ? `${formId}-phone-error` : undefined}
+            required
             {...register("phone", {
               onChange: (event) => {
                 event.target.value = formatBrazilPhone(event.target.value);
               },
             })}
           />
-          {error(errors.phone?.message)}
+          {error("phone", errors.phone?.message)}
         </label>
         <label className="text-sm font-semibold">
-          E-mail
+          E-mail (opcional)
           <input
             className={fieldClass}
             type="email"
             autoComplete="email"
             aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? `${formId}-email-error` : undefined}
             {...register("email")}
           />
-          {error(errors.email?.message)}
+          {error("email", errors.email?.message)}
         </label>
       </div>
       <label className="mt-5 block text-sm font-semibold">
-        Solução procurada
+        Solução procurada (obrigatório)
         <select
           className={fieldClass}
           aria-invalid={Boolean(errors.solution)}
+          aria-describedby={errors.solution ? `${formId}-solution-error` : undefined}
+          required
           {...register("solution")}
         >
           <option value="" disabled>
@@ -159,22 +202,38 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
           <option>Ainda não sei</option>
           <option>Outro</option>
         </select>
-        {error(errors.solution?.message)}
+        {error("solution", errors.solution?.message)}
       </label>
       <label className="mt-5 block text-sm font-semibold">
-        Mensagem
+        Mensagem (obrigatório)
         <textarea
           className={fieldClass}
           rows={5}
           placeholder="Conte brevemente sobre sua empresa, o problema que deseja resolver e o resultado esperado."
           aria-invalid={Boolean(errors.message)}
+          aria-describedby={errors.message ? `${formId}-message-error` : undefined}
+          required
           {...register("message")}
         />
-        {error(errors.message?.message)}
+        {error("message", errors.message?.message)}
       </label>
+      <div className="mt-5">
+        {turnstileSiteKey ? (
+          <Turnstile
+            key={turnstileInstance}
+            siteKey={turnstileSiteKey}
+            onTokenChange={handleTurnstileToken}
+            onError={handleVerificationError}
+          />
+        ) : (
+          <p className="rounded-[10px] bg-amber-50 p-3 text-sm text-amber-900">
+            O formulário ainda não está configurado. Fale conosco pelo WhatsApp.
+          </p>
+        )}
+      </div>
       <button
         className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-[var(--brand-600)] px-5 font-semibold text-white transition hover:bg-[var(--brand-700)] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !turnstileSiteKey}
         type="submit"
       >
         {isSubmitting ? "Enviando…" : "Enviar solicitação"}
@@ -191,12 +250,26 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
             Não foi possível enviar agora. Tente novamente ou fale conosco pelo WhatsApp.
           </p>
         )}
+        {status === "verification" && (
+          <p className="rounded-[10px] bg-amber-50 p-3 text-amber-900">
+            Conclua a verificação de segurança antes de enviar.
+          </p>
+        )}
         {status === "configuration" && (
           <p className="rounded-[10px] bg-amber-50 p-3 text-amber-900">
             O formulário ainda não está configurado. Fale conosco pelo WhatsApp.
           </p>
         )}
       </div>
+      {(!turnstileSiteKey || status === "error" || status === "configuration") && (
+        <a
+          className="mt-4 inline-flex min-h-12 items-center font-semibold text-[var(--brand-600)] underline underline-offset-4"
+          href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
+          data-conversion-event="whatsapp_nav_click"
+        >
+          Continuar pelo WhatsApp
+        </a>
+      )}
       <p className="mt-4 text-xs leading-5 text-zinc-500">
         Seus dados serão utilizados somente para responder à solicitação. Consulte a{" "}
         <Link className="underline" href="/politica-de-privacidade">

@@ -1,10 +1,13 @@
+> Atualização de hospedagem: o fluxo vigente está em `docs/CLOUDFLARE_PAGES.md`. O site é exportado estaticamente; contato em Pages Functions e fontes locais.
+
 # Checklist priorizado de design, UX e UI
 
 Este documento reúne os próximos ganhos de qualidade e conversão identificados para a landing page da Vexon.
 
 ## P0 — Antes da publicação
 
-- [ ] Criar o formulário no Formspree, configurar `NEXT_PUBLIC_FORMSPREE_FORM_ID` no ambiente de produção e validar o recebimento dos leads.
+- [ ] Configurar Resend na Vercel (`RESEND_API_KEY`, `CONTACT_TO_EMAIL` e `CONTACT_FROM_EMAIL`) e validar o recebimento dos leads.
+- [ ] Criar o widget do Cloudflare Turnstile, configurar `NEXT_PUBLIC_TURNSTILE_SITE_KEY` e `TURNSTILE_SECRET_KEY` na Vercel e validar o formulário em preview.
 - [ ] Substituir o espaço reservado da seção “Sobre a Vexon” por uma foto real e atual da equipe.
 - [ ] Publicar páginas reais de Política de Privacidade e Termos de Uso; apontar os links do rodapé para elas.
 - [ ] Atualizar os endereços de Instagram e LinkedIn em `src/config/site.ts` antes de exibir os links sociais.

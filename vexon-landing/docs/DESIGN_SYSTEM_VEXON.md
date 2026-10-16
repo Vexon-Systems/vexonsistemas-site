@@ -1,6 +1,8 @@
+> Atualização de hospedagem: o fluxo vigente está em `docs/CLOUDFLARE_PAGES.md`. O site é exportado estaticamente; contato em Pages Functions e fontes locais.
+
 # Design System do Site Institucional — Vexon
 
-> Especificação visual, editorial e de interface do site multipágina da Vexon. Stack: Next.js, TypeScript, Tailwind CSS, shadcn/ui, Lucide React, Motion apenas quando necessário e Formspree.
+> Especificação visual, editorial e de interface do site multipágina da Vexon. Stack: Next.js, TypeScript, Tailwind CSS, shadcn/ui, Lucide React, Motion apenas quando necessário e Pages Functions + Resend.
 
 ## 1. Resultado esperado
 
@@ -664,7 +666,7 @@ Usar os padrões do Tailwind:
 - Motion para React somente onde necessário;
 - React Hook Form;
 - Zod;
-- Formspree para o formulário inicial;
+- Pages Functions + Resend para o formulário inicial;
 - `next/font` para Plus Jakarta Sans e Inter;
 - `next/image`;
 - ferramenta de analytics definida no projeto.
@@ -831,9 +833,9 @@ A página está pronta quando:
 
 ---
 
-# 17. Integração com Formspree
+# 17. Integração com Pages Functions + Resend
 
-Usar o Formspree como solução inicial de recebimento dos formulários.
+Usar o Pages Functions + Resend como solução inicial de recebimento dos formulários.
 
 Requisitos:
 
@@ -848,7 +850,11 @@ Requisitos:
 - registrar conversão somente após resposta válida.
 
 ```env
-NEXT_PUBLIC_FORMSPREE_FORM_ID=
+RESEND_API_KEY=
+CONTACT_TO_EMAIL=contato@vexonsistemas.com
+CONTACT_FROM_EMAIL=Vexon <contato@vexonsistemas.com>
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET_KEY=
 ```
 
 Enviar somente dados necessários e linkar a Política de Privacidade. Considerar backend próprio somente quando houver CRM, persistência, automações ou regras avançadas.

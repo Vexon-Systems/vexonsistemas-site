@@ -31,7 +31,7 @@ function isActive(pathname: string, href: string) {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = usePathname().replace(/\/$/, "") || "/";
   const close = () => setOpen(false);
   const solutionsActive = pathname.startsWith("/solucoes/");
 
@@ -70,7 +70,7 @@ export function SiteHeader() {
                 >
                   Soluções
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="w-136! border border-white/15 bg-zinc-950 p-2 text-white shadow-[0_20px_48px_rgb(0_0_0_/_0.35)]">
+                <NavigationMenuContent className="w-136! border border-white/15 bg-zinc-950 p-2 text-white shadow-[0_20px_48px_rgb(0_0_0_/0.35)]">
                   <div className="grid grid-cols-2 gap-1">
                     {services.map((service) => {
                       const Icon = service.icon;
@@ -86,7 +86,7 @@ export function SiteHeader() {
                               aria-hidden="true"
                             />
                             <span>
-                              <span className="block font-display text-base font-bold tracking-[-.025em]">
+                              <span className="block font-display text-base font-bold tracking-tight">
                                 {service.title}
                               </span>
                               <span className="mt-1 block text-xs leading-5 text-zinc-400">
@@ -107,7 +107,7 @@ export function SiteHeader() {
                   <NavigationMenuItem key={href}>
                     <Link
                       aria-current={active ? "page" : undefined}
-                      className={`border-b-2 py-1 text-base font-medium transition ${active ? "border-[var(--brand-500)] text-white" : "border-transparent text-zinc-300 hover:text-white"}`}
+                      className={`border-b-2 py-1 text-base font-medium transition ${active ? "border-(--brand-500) text-white" : "border-transparent text-zinc-300 hover:text-white"}`}
                       href={href}
                     >
                       {label}
@@ -119,7 +119,7 @@ export function SiteHeader() {
           </NavigationMenu>
 
           <a
-            className="hidden min-h-11 items-center gap-2 rounded-[10px] bg-[var(--brand-600)] px-4 text-sm font-semibold transition hover:bg-[var(--brand-700)] lg:inline-flex"
+            className="hidden min-h-11 items-center gap-2 rounded-[10px] bg-(--brand-600) px-4 text-sm font-semibold transition hover:bg-(--brand-700) lg:inline-flex"
             onClick={() => trackConversion("whatsapp_nav_click")}
             href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
           >
@@ -135,10 +135,10 @@ export function SiteHeader() {
 
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm lg:hidden" />
-        <Dialog.Content className="fixed inset-y-0 right-0 z-50 w-full max-w-lg overflow-y-auto bg-zinc-950 p-5 text-white shadow-[-20px_0_48px_rgb(0_0_0_/_0.4)] lg:hidden">
+        <Dialog.Content className="fixed inset-y-0 right-0 z-50 w-full max-w-lg overflow-y-auto bg-zinc-950 p-5 text-white shadow-[-20px_0_48px_rgb(0_0_0_/0.4)] lg:hidden">
           <Dialog.Title className="sr-only">Menu de navegação</Dialog.Title>
             <div
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgb(183_31_30_/_0.14),transparent_38%)]"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgb(183_31_30_/0.14),transparent_38%)]"
               aria-hidden="true"
             />
             <div className="relative mx-auto flex min-h-full max-w-lg flex-col">
@@ -159,7 +159,7 @@ export function SiteHeader() {
               <div className="mt-8 grid gap-2">
                 <Link
                   aria-current={pathname === "/" ? "page" : undefined}
-                  className={`block rounded-[10px] border px-4 py-4 text-xl font-semibold transition ${pathname === "/" ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.08]"}`}
+                  className={`block rounded-[10px] border px-4 py-4 text-xl font-semibold transition ${pathname === "/" ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/8"}`}
                   href="/"
                   onClick={close}
                 >
@@ -177,7 +177,7 @@ export function SiteHeader() {
                       return (
                         <Link
                           aria-current={active ? "page" : undefined}
-                          className={`flex items-center gap-3 rounded-[10px] border px-4 py-3.5 text-base font-semibold transition ${active ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.08]"}`}
+                          className={`flex items-center gap-3 rounded-[10px] border px-4 py-3.5 text-base font-semibold transition ${active ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/8"}`}
                           href={`/solucoes/${service.slug}`}
                           key={service.slug}
                           onClick={close}
@@ -196,7 +196,7 @@ export function SiteHeader() {
                     return (
                       <Link
                         aria-current={active ? "page" : undefined}
-                        className={`block rounded-[10px] border px-4 py-4 text-xl font-semibold transition ${active ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/[.08]"}`}
+                        className={`block rounded-[10px] border px-4 py-4 text-xl font-semibold transition ${active ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/8"}`}
                         href={href}
                         key={href}
                         onClick={close}
@@ -207,7 +207,7 @@ export function SiteHeader() {
                   })}
                 </div>
                 <a
-                  className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-(--brand-600) px-4 font-semibold transition hover:bg-[var(--brand-700)]"
+                  className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-(--brand-600) px-4 font-semibold transition hover:bg-(--brand-700)"
                   onClick={() => trackConversion("whatsapp_nav_click")}
                   href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
                 >

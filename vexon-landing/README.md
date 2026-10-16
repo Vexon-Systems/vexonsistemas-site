@@ -1,26 +1,30 @@
-# Landing Page — Vexon Sistemas
+# Vexon — site institucional
 
-Landing page institucional construída com Next.js, TypeScript e Tailwind CSS.
+Next.js, TypeScript e Tailwind CSS com exportação estática para Cloudflare Pages. O contato usa Pages Functions, Turnstile e Resend via HTTP.
 
-## Executar localmente
+## Executar
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Abra `http://localhost:3000` no navegador.
+## Build e preview completo
 
-## Configurações antes da publicação
+```bash
+npm run build
+npm run preview:pages
+```
 
-1. Copie `.env.example` para `.env.local` e defina o domínio definitivo em `NEXT_PUBLIC_SITE_URL`.
-2. Atualize WhatsApp, e-mail, Instagram e LinkedIn em `src/config/site.ts`.
-3. Substitua os placeholders do portfólio e da equipe por materiais reais.
-4. Conecte o formulário a um serviço de captação de leads.
+O preview Pages roda em http://127.0.0.1:3002. O Next dev serve apenas a interface.
 
-## Verificação
+## Verificar
 
 ```bash
 npm run lint
-npm run build
+npm run typecheck
+npm run test:unit
+npm run test:e2e
 ```
+
+Leia [a configuração de publicação e variáveis](docs/CLOUDFLARE_PAGES.md) antes do deploy.

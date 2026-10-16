@@ -11,7 +11,7 @@ import { projects } from "@/content/projects";
 export const metadata: Metadata = {
   title: "Projetos",
   description: "Produtos próprios e projetos em desenvolvimento da Vexon.",
-  alternates: { canonical: "/projetos" },
+  alternates: { canonical: "/projetos/" },
 };
 
 export default function ProjectsPage() {
@@ -71,7 +71,7 @@ export default function ProjectsPage() {
                       {project.name}
                     </h2>
                     <p className="mt-6 max-w-md leading-7 text-zinc-400">
-                      Descrição do projeto em breve. Os detalhes desta iniciativa serão publicados conforme o desenvolvimento avançar.
+                      {project.description}
                     </p>
                     <Link className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-red-200 transition hover:text-white" href={`/projetos/${project.slug}`}>
                       Ver detalhes <ArrowUpRight size={17} aria-hidden="true" />

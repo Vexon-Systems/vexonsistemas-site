@@ -1,0 +1,7 @@
+# Copy to .dev.vars for Wrangler only. Never commit real secrets.
+RESEND_API_KEY=
+CONTACT_TO_EMAIL=contato@vexonsistemas.com
+CONTACT_FROM_EMAIL="Vexon <contato@vexonsistemas.com>"
+TURNSTILE_SECRET_KEY=
+# Optional comma-separated exact hostnames; defaults to the request hostname.
+# TURNSTILE_HOSTNAMES=vexon.com.br,www.vexon.com.br

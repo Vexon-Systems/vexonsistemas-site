@@ -37,20 +37,20 @@ export function ProjectsMotion() {
         const caseElement = element as HTMLElement;
         const media = caseElement.querySelector<HTMLElement>(".project-media");
         const copy = caseElement.querySelector<HTMLElement>(".project-copy");
-        const offset = caseElement.dataset.projectSide === "left" ? -28 : 28;
+        const offset = caseElement.dataset.projectSide === "left" ? -20 : 20;
 
         if (copy) {
           controls.add(
-            animate(copy, { opacity: [0, 1], transform: ["translateY(18px)", "translateY(0px)"] }, { duration: 0.46, ease: "easeOut" }),
+            animate(copy, { opacity: [0, 1], transform: ["translateY(14px)", "translateY(0px)"] }, { duration: 0.42, ease: "easeOut" }),
           );
         }
         if (media) {
           controls.add(
-            animate(media, { opacity: [0, 1], transform: [`translateX(${offset}px)`, "translateX(0px)"] }, { delay: 0.08, duration: 0.52, ease: "easeOut" }),
+            animate(media, { opacity: [0, 1], transform: [`translateX(${offset}px)`, "translateX(0px)"] }, { delay: 0.03, duration: 0.46, ease: "easeOut" }),
           );
         }
       },
-      { margin: "0px 0px -12% 0px" },
+      { margin: "0px 0px -4% 0px" },
     );
 
     return () => {
