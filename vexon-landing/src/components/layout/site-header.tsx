@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Menu, MessageCircle, X } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, Menu, MessageCircle, X } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import "./mobile-menu.css";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -31,12 +32,28 @@ function isActive(pathname: string, href: string) {
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const solutionsId = useId();
   const pathname = usePathname().replace(/\/$/, "") || "/";
   const close = () => setOpen(false);
   const solutionsActive = pathname.startsWith("/solucoes/");
 
+  const changeOpen = (next: boolean) => {
+    setOpen(next);
+    setSolutionsOpen(solutionsActive);
+  };
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
+
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog.Root open={open} onOpenChange={changeOpen}>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/95 text-white backdrop-blur">
         <nav
           className="site-container flex min-h-18 items-center justify-between gap-5"
@@ -126,7 +143,10 @@ export function SiteHeader() {
             <MessageCircle size={17} aria-hidden="true" /> Falar com a Vexon
           </a>
           <Dialog.Trigger asChild>
-            <button className="grid min-h-11 min-w-11 place-items-center lg:hidden" aria-label="Abrir menu" onClick={() => setOpen(true)}>
+            <button
+              className="grid min-h-11 min-w-11 place-items-center lg:hidden"
+              aria-label="Abrir menu"
+            >
               <Menu aria-hidden="true" />
             </button>
           </Dialog.Trigger>
@@ -134,87 +154,86 @@ export function SiteHeader() {
       </header>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/45 backdrop-blur-sm lg:hidden" />
-        <Dialog.Content className="fixed inset-y-0 right-0 z-50 w-full max-w-lg overflow-y-auto bg-zinc-950 p-5 text-white shadow-[-20px_0_48px_rgb(0_0_0_/0.4)] lg:hidden">
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/55 lg:hidden" />
+        <Dialog.Content className="vexon-mobile-menu lg:hidden">
           <Dialog.Title className="sr-only">Menu de navegação</Dialog.Title>
-            <div
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgb(183_31_30_/0.14),transparent_38%)]"
-              aria-hidden="true"
+          <Dialog.Description className="sr-only">
+            Navegue pelas páginas da Vexon ou expanda Soluções para conhecer os serviços.
+          </Dialog.Description>
+          <div className="mobile-menu-header">
+            <Image
+              src="/brand/logo-vexon-white.png"
+              alt="Vexon"
+              width={152}
+              height={55}
+              className="h-auto w-28"
             />
-            <div className="relative mx-auto flex min-h-full max-w-lg flex-col">
-              <div className="flex items-center justify-between border-b border-white/10 pb-5">
-                <Image
-                  src="/brand/logo-vexon-white.png"
-                  alt="Vexon"
-                  width={152}
-                  height={55}
-                  className="h-auto w-28"
-                />
-                <Dialog.Close asChild>
-                  <button className="grid min-h-11 min-w-11 place-items-center rounded-[10px] border border-white/15 bg-white/5 transition hover:bg-white/10" aria-label="Fechar menu">
-                    <X aria-hidden="true" />
-                  </button>
-                </Dialog.Close>
-              </div>
-              <div className="mt-8 grid gap-2">
+            <Dialog.Close asChild>
+              <button className="mobile-menu-close" aria-label="Fechar menu">
+                <X aria-hidden="true" size={22} />
+              </button>
+            </Dialog.Close>
+          </div>
+          <nav className="mobile-menu-scroll" aria-label="Navegação móvel">
+            <ul className="mobile-menu-list">
+              <li>
                 <Link
-                  aria-current={pathname === "/" ? "page" : undefined}
-                  className={`block rounded-[10px] border px-4 py-4 text-xl font-semibold transition ${pathname === "/" ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/8"}`}
+                  className="mobile-menu-link"
                   href="/"
+                  aria-current={pathname === "/" ? "page" : undefined}
                   onClick={close}
                 >
                   Início
                 </Link>
-                <div className="mt-4">
-                  <p className="px-1 text-xs font-bold uppercase tracking-[.14em] text-red-200">
-                    Soluções
-                  </p>
-                  <div className="mt-3 grid gap-2">
-                    {services.map((service) => {
-                      const Icon = service.icon;
-                      const active = pathname === `/solucoes/${service.slug}`;
-
-                      return (
-                        <Link
-                          aria-current={active ? "page" : undefined}
-                          className={`flex items-center gap-3 rounded-[10px] border px-4 py-3.5 text-base font-semibold transition ${active ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/8"}`}
-                          href={`/solucoes/${service.slug}`}
-                          key={service.slug}
-                          onClick={close}
-                        >
-                          <Icon className="size-5 text-red-200" aria-hidden="true" />
-                          {service.title}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="mt-4 grid gap-2">
-                  {links.slice(1).map(([label, href]) => {
-                    const active = isActive(pathname, href);
-
-                    return (
+              </li>
+              <li>
+                <button
+                  className="mobile-menu-link mobile-menu-disclosure"
+                  aria-expanded={solutionsOpen}
+                  aria-controls={solutionsId}
+                  data-active={solutionsActive || undefined}
+                  onClick={() => setSolutionsOpen(!solutionsOpen)}
+                >
+                  Soluções <ChevronDown size={18} aria-hidden="true" />
+                </button>
+                <ul className="mobile-menu-services" id={solutionsId} hidden={!solutionsOpen}>
+                  {services.map((service) => (
+                    <li key={service.slug}>
                       <Link
-                        aria-current={active ? "page" : undefined}
-                        className={`block rounded-[10px] border px-4 py-4 text-xl font-semibold transition ${active ? "border-red-500/50 bg-red-950/45 text-red-100" : "border-white/10 bg-white/[.035] hover:border-white/20 hover:bg-white/8"}`}
-                        href={href}
-                        key={href}
+                        className="mobile-menu-service"
+                        href={"/solucoes/" + service.slug}
+                        aria-current={pathname === "/solucoes/" + service.slug ? "page" : undefined}
                         onClick={close}
                       >
-                        {label}
+                        {service.title}
                       </Link>
-                    );
-                  })}
-                </div>
-                <a
-                  className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-(--brand-600) px-4 font-semibold transition hover:bg-(--brand-700)"
-                  onClick={() => trackConversion("whatsapp_nav_click")}
-                  href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
-                >
-                  Falar com a Vexon
-                </a>
-              </div>
-            </div>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+              {links.slice(1).map(([label, href]) => (
+                <li key={href}>
+                  <Link
+                    className="mobile-menu-link"
+                    href={href}
+                    aria-current={isActive(pathname, href) ? "page" : undefined}
+                    onClick={close}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="mobile-menu-footer">
+            <a
+              className="mobile-menu-whatsapp"
+              href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
+              onClick={() => trackConversion("whatsapp_nav_click")}
+            >
+              <MessageCircle size={18} aria-hidden="true" /> Conversar pelo WhatsApp
+            </a>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

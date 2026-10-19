@@ -12,22 +12,31 @@ export function VexonAccordion({
 }: {
   items: readonly AccordionItem[];
   className?: string;
-  variant?: "default" | "home";
+  variant?: "default" | "home" | "editorial";
 }) {
   const home = variant === "home";
+  const editorial = variant === "editorial";
 
   return (
     <AccordionPrimitive.Root
-      className={home ? `grid gap-3 ${className}` : `faq-list ${className}`}
+      className={
+        editorial
+          ? `faq-editorial ${className}`
+          : home
+            ? `grid gap-3 ${className}`
+            : `faq-list ${className}`
+      }
       type="single"
       collapsible
     >
       {items.map(({ question, answer }, index) => (
         <AccordionPrimitive.Item
           className={
-            home
-              ? "overflow-hidden border border-zinc-200 bg-white transition data-[state=open]:border-zinc-300 data-[state=open]:shadow-[0_10px_28px_rgb(0_0_0_/_0.06)]"
-              : "faq-item"
+            editorial
+              ? "faq-editorial-item"
+              : home
+                ? "overflow-hidden border border-zinc-200 bg-white transition data-[state=open]:border-zinc-300 data-[state=open]:shadow-[0_10px_28px_rgb(0_0_0_/_0.06)]"
+                : "faq-item"
           }
           value={`faq-${index}`}
           key={question}
@@ -35,17 +44,21 @@ export function VexonAccordion({
           <AccordionPrimitive.Header>
             <AccordionPrimitive.Trigger
               className={
-                home
-                  ? "group flex min-h-16 w-full items-center justify-between gap-5 px-5 text-left font-display text-lg font-bold tracking-[-.025em] outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-600)]"
-                  : "faq-trigger"
+                editorial
+                  ? "faq-editorial-trigger group"
+                  : home
+                    ? "group flex min-h-16 w-full items-center justify-between gap-5 px-5 text-left font-display text-lg font-bold tracking-[-.025em] outline-none transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-600)]"
+                    : "faq-trigger"
               }
             >
               {question}
               <Plus
                 className={
-                  home
-                    ? "size-5 shrink-0 text-[var(--brand-600)] transition duration-200 group-data-[state=open]:rotate-45"
-                    : "faq-icon"
+                  editorial
+                    ? "size-4 shrink-0 text-zinc-500 transition duration-200 group-data-[state=open]:rotate-45 motion-reduce:transition-none"
+                    : home
+                      ? "size-5 shrink-0 text-[var(--brand-600)] transition duration-200 group-data-[state=open]:rotate-45"
+                      : "faq-icon"
                 }
                 size={18}
                 aria-hidden="true"
@@ -53,9 +66,23 @@ export function VexonAccordion({
             </AccordionPrimitive.Trigger>
           </AccordionPrimitive.Header>
           <AccordionPrimitive.Content
-            className={home ? "overflow-hidden data-[state=closed]:animate-none" : "faq-content"}
+            className={
+              editorial
+                ? "faq-editorial-content"
+                : home
+                  ? "overflow-hidden data-[state=closed]:animate-none"
+                  : "faq-content"
+            }
           >
-            <p className={home ? "border-t border-zinc-100 px-5 py-5 leading-7 text-zinc-600" : ""}>
+            <p
+              className={
+                editorial
+                  ? "faq-editorial-answer"
+                  : home
+                    ? "border-t border-zinc-100 px-5 py-5 leading-7 text-zinc-600"
+                    : ""
+              }
+            >
               {answer}
             </p>
           </AccordionPrimitive.Content>

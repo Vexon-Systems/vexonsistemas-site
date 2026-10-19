@@ -26,6 +26,53 @@ test("mobile navigation closes with Escape and restores the trigger", async ({ p
   await expect(trigger).toBeFocused();
 });
 
+test("mobile solutions support keyboard navigation and reopen on the active service", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Abrir menu" }).click();
+  const menu = page.getByRole("dialog", { name: "Menu de navegação" });
+  const solutions = menu.getByRole("button", { name: "Soluções", exact: true });
+  await expect(solutions).toHaveAttribute("aria-expanded", "false");
+  await page.screenshot({ path: "test-results/mobile-menu.png" });
+  await solutions.focus();
+  await solutions.press("Enter");
+  await expect(solutions).toHaveAttribute("aria-expanded", "true");
+  await page.screenshot({ path: "test-results/mobile-menu-expanded.png" });
+  await page.keyboard.press("Tab");
+  const service = menu.getByRole("link", { name: "Sites institucionais" });
+  await expect(service).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/solucoes\/sites-institucionais\/$/);
+  await expect(menu).toBeHidden();
+  await page.getByRole("button", { name: "Abrir menu" }).click();
+  await expect(solutions).toHaveAttribute("aria-expanded", "true");
+  await expect(service).toHaveAttribute("aria-current", "page");
+});
+
+test("short mobile menu keeps its close and contact actions visible while the list scrolls", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 480 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Abrir menu" }).click();
+  const menu = page.getByRole("dialog", { name: "Menu de navegação" });
+  await menu.getByRole("button", { name: "Soluções", exact: true }).click();
+  const cta = menu.getByRole("link", { name: "Conversar pelo WhatsApp" });
+  await expect(cta).toBeInViewport();
+  const before = await cta.boundingBox();
+  await menu.getByRole("link", { name: "Contato", exact: true }).scrollIntoViewIfNeeded();
+  await expect(menu.getByRole("button", { name: "Fechar menu" })).toBeInViewport();
+  await expect(cta).toBeInViewport();
+  const after = await cta.boundingBox();
+  expect(after?.y).toBe(before?.y);
+  expect(await menu.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+  await page.screenshot({ path: "test-results/mobile-menu-short.png" });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(menu).toBeHidden();
+});
+
 test("FAQ expands its answer", async ({ page }) => {
   await page.goto("/");
 
@@ -73,10 +120,15 @@ test("Pages serves headers, static assets and the contact Function", async ({ re
   expect(await invalid.json()).toEqual({ error: "invalid_data" });
 });
 
-for (const width of [390, 768, 1440]) {
+for (const width of [320, 390, 768, 1440]) {
   test(`home has no overflow or clipped project links at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    expect(
+      await page
+        .locator(".home-hero")
+        .evaluate((el) => el.getBoundingClientRect().height >= innerHeight),
+    ).toBe(true);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
     ).toBe(true);
@@ -90,9 +142,7 @@ for (const width of [390, 768, 1440]) {
       page.getByRole("link", { name: "Conversar com a Vexon pelo WhatsApp" }),
     ).toBeHidden();
     await page.screenshot({ path: `test-results/home-${width}.png`, animations: "disabled" });
-    await page
-      .getByRole("heading", { name: "Projetos que demonstram nossa capacidade" })
-      .scrollIntoViewIfNeeded();
+    await page.getByRole("heading", { name: "Projetos em construção." }).scrollIntoViewIfNeeded();
     await expect(
       page.getByRole("link", { name: "Conversar com a Vexon pelo WhatsApp" }),
     ).toBeVisible();
@@ -115,6 +165,34 @@ test("exported navigation opens the service page without browser errors", async 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: "test-results/service-mobile.png", animations: "disabled" });
   expect(errors).toEqual([]);
+});
+
+test("about page keeps its reading and contact paths usable across screen sizes", async ({
+  page,
+}) => {
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/sobre/");
+    expect(
+      await page
+        .locator(".about-intro")
+        .evaluate((el) => el.getBoundingClientRect().height >= innerHeight),
+    ).toBe(true);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+      true,
+    );
+    await page.screenshot({ path: "test-results/about-" + width + ".png" });
+    await page.getByRole("link", { name: "Conheça nossa história" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Quatro estudantes. Uma ideia em comum." }),
+    ).toBeInViewport();
+    await expect(page.getByText("Imagem ilustrativa · Planejar antes de construir")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Conversar sobre meu projeto", exact: true }),
+    ).toHaveAttribute("href", "/contato/");
+    if (width === 1440) await page.screenshot({ path: "test-results/about-origin.png" });
+  }
 });
 
 test("all exported public pages respond successfully", async ({ request }) => {
