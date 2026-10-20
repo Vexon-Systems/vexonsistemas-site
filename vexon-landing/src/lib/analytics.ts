@@ -6,6 +6,8 @@ export type ConversionEvent =
   | "solution_cta_click"
   | "contact_form_submit"
   | "contact_form_start"
+  | "solution_finder_complete"
+  | "briefing_whatsapp_click"
   | "project_open"
   | "social_link_click";
 

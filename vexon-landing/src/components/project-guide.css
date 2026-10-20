@@ -1,0 +1,178 @@
+.project-guide {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--neutral-200);
+  padding-top: 2rem;
+  color: var(--neutral-900);
+}
+.project-guide summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.75rem 0;
+}
+.project-guide h3,
+.project-guide h2 {
+  font-family: var(--font-jakarta), Arial, sans-serif;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.25;
+}
+.project-guide p {
+  max-width: 65ch;
+  line-height: 1.75;
+}
+.guide-panel {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  margin-top: 1rem;
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg, 14px);
+}
+.guide-progress {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+  list-style: none;
+  padding: 0;
+}
+.guide-progress li {
+  flex: 1;
+  border-top: 3px solid var(--neutral-300);
+  padding-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--neutral-600);
+}
+.guide-progress li[aria-current="step"] {
+  border-color: var(--brand-600);
+  color: var(--brand-700);
+  font-weight: 700;
+}
+.guide-step-title {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-jakarta), Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.guide-options {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.guide-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--neutral-300);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  min-height: 52px;
+}
+.guide-option:has(input:checked) {
+  border-color: var(--brand-600);
+  background: var(--brand-50);
+}
+.guide-option input {
+  accent-color: var(--brand-600);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+.guide-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  background: var(--brand-600);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+.guide-primary:hover {
+  background: var(--brand-700);
+}
+.guide-secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.guide-field {
+  display: block;
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.guide-input {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  border: 1px solid var(--neutral-300);
+  border-radius: 10px;
+  background: white;
+  padding: 0.85rem;
+  min-height: 48px;
+  font-weight: 400;
+  color: var(--neutral-900);
+}
+.guide-note {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--neutral-600);
+}
+.guide-summary {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 1.25rem;
+  background: white;
+  border-left: 3px solid var(--brand-600);
+  line-height: 1.8;
+  margin-top: 1rem;
+}
+.guide-result {
+  font-family: var(--font-jakarta), Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.75rem 0;
+}
+.guide-comparison {
+  margin-top: 2rem;
+}
+.guide-comparison li {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--neutral-200);
+  line-height: 1.7;
+}
+.project-guide :is(button, a, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 4px;
+}
+@media (max-width: 640px) {
+  .guide-comparison li {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .guide-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .guide-primary {
+    width: 100%;
+  }
+}

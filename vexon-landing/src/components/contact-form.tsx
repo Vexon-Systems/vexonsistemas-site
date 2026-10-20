@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useCallback, useId, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { trackConversion } from "@/lib/analytics";
 import { contactSchema, type ContactValues } from "@/lib/contact-schema";
 import { Turnstile } from "@/components/turnstile";
@@ -41,6 +41,7 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    control,
   } = useForm<ContactValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -54,6 +55,19 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
       turnstileToken: "",
     },
   });
+
+  const values = useWatch({ control });
+  const whatsappMessage = [
+    "Olá! Quero conversar sobre meu projeto.",
+    values.name?.trim() && `Nome: ${values.name.trim()}`,
+    values.company?.trim() && `Empresa: ${values.company.trim()}`,
+    values.phone?.trim() && `WhatsApp: ${values.phone.trim()}`,
+    values.email?.trim() && `E-mail: ${values.email.trim()}`,
+    values.solution && `Solução: ${values.solution}`,
+    values.message?.trim() && `Mensagem: ${values.message.trim()}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   const handleTurnstileToken = useCallback(
     (token: string) => setValue("turnstileToken", token, { shouldValidate: true }),
@@ -227,7 +241,8 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
           />
         ) : (
           <p className="rounded-[10px] bg-amber-50 p-3 text-sm text-amber-900">
-            O formulário ainda não está configurado. Fale conosco pelo WhatsApp.
+            O envio por e-mail está indisponível no momento. Você pode preencher sua mensagem e
+            continuar pelo WhatsApp.
           </p>
         )}
       </div>
@@ -261,14 +276,19 @@ export function ContactForm({ initialSolution = "" }: { initialSolution?: string
           </p>
         )}
       </div>
-      {(!turnstileSiteKey || status === "error" || status === "configuration") && (
+      {status !== "success" && (
         <a
           className="mt-4 inline-flex min-h-12 items-center font-semibold text-[var(--brand-600)] underline underline-offset-4"
-          href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
+          href={getWhatsAppUrl(whatsappMessage)}
           data-conversion-event="whatsapp_nav_click"
         >
           Continuar pelo WhatsApp
         </a>
+      )}
+      {status !== "success" && (
+        <p className="mt-1 text-xs leading-5 text-zinc-600">
+          O WhatsApp abre com os campos preenchidos. Revise e envie a mensagem na conversa.
+        </p>
       )}
       <p className="mt-4 text-xs leading-5 text-zinc-500">
         Seus dados serão utilizados somente para responder à solicitação. Consulte a{" "}

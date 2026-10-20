@@ -11,6 +11,7 @@ import { services } from "@/content/services";
 import { projects } from "@/content/projects";
 import { homeFaqs, homeProcess, homeServices } from "@/content/home";
 import "./home.css";
+import { SolutionFinder } from "@/components/solution-finder";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -132,6 +133,7 @@ export default function Home() {
                 );
               })}
             </div>
+            <SolutionFinder />
           </div>
         </section>
 
