@@ -7,6 +7,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ChevronDown, Menu, MessageCircle, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import "./mobile-menu.css";
+import "./site-header.css";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -54,12 +55,9 @@ export function SiteHeader() {
 
   return (
     <Dialog.Root open={open} onOpenChange={changeOpen}>
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/95 text-white backdrop-blur">
-        <nav
-          className="site-container flex min-h-18 items-center justify-between gap-5"
-          aria-label="Navegação principal"
-        >
-          <Link href="/" aria-label="Vexon — início">
+      <header className="site-header">
+        <nav className="site-container site-header-inner" aria-label="Navegação principal">
+          <Link className="site-brand" href="/" aria-label="Vexon — início">
             <Image
               src="/brand/logo-vexon-white.png"
               alt="Vexon"
@@ -70,12 +68,12 @@ export function SiteHeader() {
             />
           </Link>
 
-          <NavigationMenu viewport={false} className="hidden lg:flex">
-            <NavigationMenuList className="gap-4">
+          <NavigationMenu viewport={false} className="desktop-navigation hidden lg:flex">
+            <NavigationMenuList className="desktop-nav-list">
               <NavigationMenuItem>
                 <Link
                   aria-current={pathname === "/" ? "page" : undefined}
-                  className={`border-b-2 py-1 text-base font-medium transition ${pathname === "/" ? "border-((--brand-500)) text-white" : "border-transparent text-zinc-300 hover:text-white"}`}
+                  className="desktop-nav-link"
                   href="/"
                 >
                   Início
@@ -83,30 +81,29 @@ export function SiteHeader() {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuTrigger
-                  className={`h-auto rounded-none border-b-2 bg-transparent px-0 py-1 text-base font-medium hover:bg-transparent hover:text-white focus:bg-transparent focus:text-white data-[state=open]:bg-transparent data-[state=open]:hover:bg-transparent ${solutionsActive ? "border-(--brand-500) text-white" : "border-transparent text-zinc-300"}`}
+                  data-active={solutionsActive || undefined}
+                  className="desktop-nav-link"
                 >
                   Soluções
                 </NavigationMenuTrigger>
-                <NavigationMenuContent className="w-136! border border-white/15 bg-zinc-950 p-2 text-white shadow-[0_20px_48px_rgb(0_0_0_/0.35)]">
-                  <div className="grid grid-cols-2 gap-1">
+                <NavigationMenuContent className="desktop-solutions-panel">
+                  <div className="desktop-solutions-grid">
                     {services.map((service) => {
                       const Icon = service.icon;
 
                       return (
                         <NavigationMenuLink asChild key={service.slug}>
                           <Link
-                            className="group flex min-h-28 gap-3 rounded-[10px] border border-transparent p-4 transition hover:border-white/10 hover:bg-white/6 focus:bg-white/6"
+                            className="desktop-solution-link"
+                            aria-current={
+                              pathname === "/solucoes/" + service.slug ? "page" : undefined
+                            }
                             href={`/solucoes/${service.slug}`}
                           >
-                            <Icon
-                              className="mt-0.5 size-5 shrink-0 text-red-200 transition group-hover:scale-110"
-                              aria-hidden="true"
-                            />
+                            <Icon className="desktop-solution-icon" aria-hidden="true" />
                             <span>
-                              <span className="block font-display text-base font-bold tracking-tight">
-                                {service.title}
-                              </span>
-                              <span className="mt-1 block text-xs leading-5 text-zinc-400">
+                              <span className="desktop-solution-title">{service.title}</span>
+                              <span className="desktop-solution-description">
                                 {service.description}
                               </span>
                             </span>
@@ -124,7 +121,7 @@ export function SiteHeader() {
                   <NavigationMenuItem key={href}>
                     <Link
                       aria-current={active ? "page" : undefined}
-                      className={`border-b-2 py-1 text-base font-medium transition ${active ? "border-(--brand-500) text-white" : "border-transparent text-zinc-300 hover:text-white"}`}
+                      className="desktop-nav-link"
                       href={href}
                     >
                       {label}
@@ -136,7 +133,7 @@ export function SiteHeader() {
           </NavigationMenu>
 
           <a
-            className="hidden min-h-11 items-center gap-2 rounded-[10px] bg-(--brand-600) px-4 text-sm font-semibold transition hover:bg-(--brand-700) lg:inline-flex"
+            className="site-header-cta hidden lg:inline-flex"
             onClick={() => trackConversion("whatsapp_nav_click")}
             href={getWhatsAppUrl("Olá! Quero conversar sobre meu projeto.")}
           >

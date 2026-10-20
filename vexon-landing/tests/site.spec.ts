@@ -127,7 +127,14 @@ for (const width of [320, 390, 768, 1440]) {
     expect(
       await page
         .locator(".home-hero")
-        .evaluate((el) => el.getBoundingClientRect().height >= innerHeight),
+        .evaluate(
+          (el) =>
+            Math.abs(
+              el.getBoundingClientRect().height +
+                document.querySelector("header")!.getBoundingClientRect().height -
+                innerHeight,
+            ) <= 2,
+        ),
     ).toBe(true);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
@@ -146,6 +153,8 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(
       page.getByRole("link", { name: "Conversar com a Vexon pelo WhatsApp" }),
     ).toBeVisible();
+    await page.locator("#contato").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `test-results/contact-${width}.png`, animations: "disabled" });
   });
 }
 
@@ -176,7 +185,14 @@ test("about page keeps its reading and contact paths usable across screen sizes"
     expect(
       await page
         .locator(".about-intro")
-        .evaluate((el) => el.getBoundingClientRect().height >= innerHeight),
+        .evaluate(
+          (el) =>
+            Math.abs(
+              el.getBoundingClientRect().height +
+                document.querySelector("header")!.getBoundingClientRect().height -
+                innerHeight,
+            ) <= 2,
+        ),
     ).toBe(true);
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -193,6 +209,95 @@ test("about page keeps its reading and contact paths usable across screen sizes"
     ).toHaveAttribute("href", "/contato/");
     if (width === 1440) await page.screenshot({ path: "test-results/about-origin.png" });
   }
+});
+
+const heroRoutes = [
+  "/",
+  "/sobre/",
+  "/contato/",
+  "/projetos/",
+  "/politica-de-privacidade/",
+  "/termos-de-uso/",
+  "/solucoes/sites-institucionais/",
+  "/solucoes/landing-pages/",
+  "/solucoes/lojas-virtuais/",
+  "/solucoes/sistemas-sob-medida/",
+  "/projetos/sellion-pdv/",
+  "/projetos/consultor-hub/",
+  "/projetos/telemetria-de-pivos/",
+];
+
+for (const viewport of [
+  { width: 320, height: 700 },
+  { width: 390, height: 844 },
+  { width: 768, height: 900 },
+  { width: 1440, height: 900 },
+]) {
+  test(
+    "all page heroes fit the first screen and load their image at " + viewport.width + "px",
+    async ({ page }) => {
+      await page.setViewportSize(viewport);
+      for (const path of heroRoutes) {
+        await page.goto(path);
+        const hero = page.locator("main .viewport-hero");
+        const metrics = await hero.evaluate((el) => ({
+          total:
+            el.getBoundingClientRect().height +
+            document.querySelector("header")!.getBoundingClientRect().height,
+          viewport: innerHeight,
+          overflow: document.documentElement.scrollWidth > innerWidth,
+        }));
+        expect(Math.abs(metrics.total - metrics.viewport), path).toBeLessThanOrEqual(2);
+        expect(metrics.overflow, path).toBe(false);
+        await expect(page.getByRole("heading", { level: 1 })).toBeInViewport({ ratio: 1 });
+        const image = hero.locator("img");
+        await expect
+          .poll(
+            () =>
+              image.evaluate(
+                (el) =>
+                  (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0,
+              ),
+            { message: path },
+          )
+          .toBe(true);
+        const filename = path === "/" ? "home" : path.split("/").filter(Boolean).join("-");
+        await page.screenshot({
+          path: "test-results/hero-" + filename + "-" + viewport.width + ".png",
+          animations: "disabled",
+        });
+      }
+    },
+  );
+}
+
+test("desktop navigation uses the same red state and supports its service menu", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Navegação principal" });
+  const home = nav.getByRole("link", { name: "Início", exact: true });
+  expect(await home.evaluate((el) => getComputedStyle(el, "::after").backgroundColor)).toBe(
+    "rgb(217, 45, 42)",
+  );
+  const solutions = nav.getByRole("button", { name: "Soluções", exact: true });
+  await solutions.focus();
+  await solutions.press("Enter");
+  await expect(solutions).toHaveAttribute("data-state", "open");
+  expect(await solutions.evaluate((el) => getComputedStyle(el).boxShadow)).toBe("none");
+  await page.screenshot({ path: "test-results/header-desktop.png" });
+  await nav.getByRole("link", { name: "Lojas virtuais" }).click();
+  await expect(page).toHaveURL(/lojas-virtuais/);
+  await expect(solutions).toHaveAttribute("data-active", "true");
+  expect(await solutions.evaluate((el) => getComputedStyle(el, "::after").backgroundColor)).toBe(
+    "rgb(217, 45, 42)",
+  );
+  expect(
+    await page
+      .getByRole("heading", { level: 1 })
+      .evaluate((el) => getComputedStyle(el, "::selection").backgroundColor),
+  ).toBe("rgb(183, 31, 30)");
 });
 
 test("all exported public pages respond successfully", async ({ request }) => {

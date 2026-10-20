@@ -7,6 +7,8 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { ProjectsMotion } from "@/components/sections/projects-motion";
 import { TelemetryVisual } from "@/components/shared/telemetry-visual";
 import { projects } from "@/content/projects";
+import { PageHero } from "@/components/shared/page-hero";
+import { heroImages } from "@/content/hero-images";
 
 export const metadata: Metadata = {
   title: "Projetos",
@@ -18,30 +20,45 @@ export default function ProjectsPage() {
   return (
     <>
       <SiteHeader />
-      <main id="conteudo-principal" className="relative isolate overflow-hidden bg-zinc-950 text-white">
+      <main
+        id="conteudo-principal"
+        className="relative isolate overflow-hidden bg-zinc-950 text-white"
+      >
         <ProjectsMotion />
-        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-          <div className="absolute -left-[15%] top-[20rem] h-0.5 w-[60rem] rotate-[-28deg] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_rgb(239_68_68_/_0.45)]" data-project-line />
-          <div className="absolute -right-[15%] top-[56rem] h-0.5 w-[64rem] rotate-[-28deg] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_rgb(239_68_68_/_0.4)]" data-project-line />
-          <div className="absolute -left-[20%] top-[100rem] h-0.5 w-[58rem] rotate-[-28deg] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_rgb(239_68_68_/_0.4)]" data-project-line />
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+          aria-hidden="true"
+        >
+          <div
+            className="absolute -left-[15%] top-[20rem] h-0.5 w-[60rem] rotate-[-28deg] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_rgb(239_68_68_/_0.45)]"
+            data-project-line
+          />
+          <div
+            className="absolute -right-[15%] top-[56rem] h-0.5 w-[64rem] rotate-[-28deg] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_rgb(239_68_68_/_0.4)]"
+            data-project-line
+          />
+          <div
+            className="absolute -left-[20%] top-[100rem] h-0.5 w-[58rem] rotate-[-28deg] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_rgb(239_68_68_/_0.4)]"
+            data-project-line
+          />
           <div className="absolute right-[7%] top-[34rem] size-40 rotate-[-28deg] border border-red-500/60 bg-red-950/20" />
           <div className="absolute left-[7%] top-[82rem] size-52 rotate-[-28deg] border border-red-500/55 bg-red-950/15" />
-          <div className="absolute -right-20 top-[78rem] h-px w-80 rotate-[-28deg] bg-red-400/70" data-project-line />
+          <div
+            className="absolute -right-20 top-[78rem] h-px w-80 rotate-[-28deg] bg-red-400/70"
+            data-project-line
+          />
         </div>
 
-        <section className="diagonal relative pb-20 pt-24 sm:pb-28 sm:pt-32">
-          <div className="site-container text-center" data-projects-hero>
-            <p className="eyebrow eyebrow-light mx-auto">PROJETOS EM CONSTRUÇÃO</p>
-            <h1 className="mx-auto max-w-4xl font-display text-[clamp(3rem,6vw,5.5rem)] font-extrabold leading-[.96] tracking-[-.07em]">
-              Projetos que mostram como pensamos tecnologia.
-            </h1>
-            <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-zinc-300">
-              Produtos próprios e iniciativas em desenvolvimento, apresentados com transparência sobre seu estágio atual.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          eyebrow="PROJETOS EM CONSTRUÇÃO"
+          title="Projetos que mostram como pensamos tecnologia."
+          description="Produtos próprios e iniciativas em desenvolvimento, apresentados com transparência sobre seu estágio atual."
+          background={heroImages.software}
+          primaryHref="#projetos-em-construcao"
+          primaryLabel="Conhecer os projetos"
+        />
 
-        <section className="pb-24 sm:pb-32">
+        <section id="projetos-em-construcao" className="section">
           <div className="site-container grid gap-20 lg:gap-28">
             {projects.map((project, index) => {
               const imageFirst = index % 2 === 1;
@@ -55,9 +72,13 @@ export default function ProjectsPage() {
                   key={project.slug}
                 >
                   <div className="project-copy">
-                    <p className="font-mono text-xs font-bold tracking-[.14em] text-red-200">{project.status.toUpperCase()}</p>
+                    <p className="font-mono text-xs font-bold tracking-[.14em] text-red-200">
+                      {project.status.toUpperCase()}
+                    </p>
                     {project.logo ? (
-                      <span className={`group/logo mt-5 block ${usesSquareLogo ? "h-24 w-24" : "h-12 w-48"} ${imageFirst ? "lg:ml-auto" : ""}`}>
+                      <span
+                        className={`group/logo mt-5 block ${usesSquareLogo ? "h-24 w-24" : "h-12 w-48"} ${imageFirst ? "lg:ml-auto" : ""}`}
+                      >
                         <Image
                           src={project.logo}
                           alt={`Logo ${project.name}`}
@@ -70,10 +91,11 @@ export default function ProjectsPage() {
                     <h2 className="mt-7 max-w-md font-display text-[clamp(2.5rem,4.2vw,4.5rem)] font-extrabold leading-[.94] tracking-[-.065em]">
                       {project.name}
                     </h2>
-                    <p className="mt-6 max-w-md leading-7 text-zinc-400">
-                      {project.description}
-                    </p>
-                    <Link className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-red-200 transition hover:text-white" href={`/projetos/${project.slug}`}>
+                    <p className="mt-6 max-w-md leading-7 text-zinc-400">{project.description}</p>
+                    <Link
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-red-200 transition hover:text-white"
+                      href={`/projetos/${project.slug}`}
+                    >
                       Ver detalhes <ArrowUpRight size={17} aria-hidden="true" />
                     </Link>
                   </div>
@@ -85,14 +107,16 @@ export default function ProjectsPage() {
                     {project.image ? (
                       <Image
                         src={project.image}
-                        alt={`Interface em desenvolvimento do projeto ${project.name}`}
+                        alt={`Identidade visual do projeto ${project.name}`}
                         width={1200}
                         height={720}
                         className="size-full object-cover transition duration-500 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none"
                         priority={index === 0}
                       />
                     ) : (
-                      <div className="h-full [&>div]:h-full"><TelemetryVisual /></div>
+                      <div className="h-full [&>div]:h-full">
+                        <TelemetryVisual />
+                      </div>
                     )}
                   </Link>
                 </article>

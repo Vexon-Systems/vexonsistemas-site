@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { HeroBackground } from "@/components/shared/hero-background";
+import { heroImages } from "@/content/hero-images";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, MapPin } from "lucide-react";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -19,10 +20,8 @@ export default function AboutPage() {
     <>
       <SiteHeader />
       <main id="conteudo-principal" className="about-page">
-        <section className="about-intro" aria-labelledby="about-heading">
-          <div className="about-intro-background" aria-hidden="true">
-            <Image src="/assets/about/planning-background.webp" alt="" fill sizes="100vw" preload />
-          </div>
+        <section className="about-intro viewport-hero" aria-labelledby="about-heading">
+          <HeroBackground image={heroImages.planning} />
           <div className="site-container">
             <div className="about-intro-meta">
               <p className="about-kicker">Sobre a Vexon</p>

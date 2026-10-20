@@ -37,7 +37,7 @@ export default function Home() {
           }}
         />
 
-        <section className="home-hero" data-primary-hero aria-labelledby="home-title">
+        <section className="home-hero viewport-hero" data-primary-hero aria-labelledby="home-title">
           <div className="home-hero-background" aria-hidden="true">
             <picture>
               <source media="(max-width: 700px)" srcSet="/assets/home/hero-workspace-mobile.webp" />
@@ -301,6 +301,35 @@ export default function Home() {
         </section>
 
         <section id="contato" className="home-section home-contact" aria-labelledby="contact-title">
+          <div className="home-contact-art" aria-hidden="true">
+            <svg
+              className="home-contact-contour home-contact-contour-left"
+              viewBox="0 0 400 400"
+              fill="none"
+              focusable="false"
+            >
+              <g stroke="currentColor" strokeWidth="1.5">
+                <path d="M-60 330C0 330 40 110 180 110S330 270 450 270" />
+                <path d="M-60 350C0 350 40 130 180 130S330 290 450 290" />
+                <path d="M-60 370C0 370 40 150 180 150S330 310 450 310" />
+                <path d="M-60 390C0 390 40 170 180 170S330 330 450 330" />
+                <path d="M-60 410C0 410 40 190 180 190S330 350 450 350" />
+              </g>
+            </svg>
+            <svg
+              className="home-contact-contour home-contact-contour-right"
+              viewBox="0 0 400 400"
+              fill="none"
+              focusable="false"
+            >
+              <g stroke="currentColor" strokeWidth="1.5">
+                <path d="M80-70C-40 100 140 240 290 170S460 230 470 350" />
+                <path d="M100-90C-20 80 160 220 310 150S480 210 490 330" />
+                <path d="M120-110C0 60 180 200 330 130S500 190 510 310" />
+                <path d="M140-130C20 40 200 180 350 110S520 170 530 290" />
+              </g>
+            </svg>
+          </div>
           <div className="site-container">
             <p className="home-kicker">Vamos conversar</p>
             <div className="home-contact-grid">

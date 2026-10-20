@@ -61,8 +61,6 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  min-height: 100vh;
-  min-height: 100svh;
   overflow: hidden;
   background: #18181b;
   color: #fff;
@@ -130,7 +128,7 @@
   grid-template-columns: minmax(0, 46rem);
   align-items: center;
   gap: 3rem;
-  margin-top: 3rem;
+  margin-top: 0;
 }
 .home-hero-copy {
   min-width: 0;
@@ -501,8 +499,48 @@
   line-height: 1.9;
 }
 .home-contact {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   background: var(--neutral-950);
   color: white;
+}
+.home-contact-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.home-contact-contour {
+  position: absolute;
+  width: clamp(24rem, 40vw, 38rem);
+  height: auto;
+  color: #dc2626;
+}
+.home-contact-contour-left {
+  left: -13rem;
+  bottom: -21rem;
+  opacity: 0.5;
+  transform: rotate(-15deg);
+}
+.home-contact-contour-right {
+  right: -11rem;
+  top: -11rem;
+  opacity: 0.55;
+  transform: rotate(12deg);
+}
+@media (max-width: 700px) {
+  .home-contact-contour-left {
+    left: -12rem;
+    bottom: -16rem;
+    opacity: 0.35;
+  }
+  .home-contact-contour-right {
+    right: -7rem;
+    top: -10rem;
+    opacity: 0.45;
+  }
 }
 .home-contact .home-kicker {
   color: #fecaca;
@@ -623,7 +661,7 @@
   .home-hero-layout {
     grid-template-columns: 1fr;
     gap: 2rem;
-    margin-top: 2.5rem;
+    margin-top: 0;
   }
   .home-hero-title {
     margin-bottom: 1.25rem;
@@ -757,5 +795,14 @@
   .home *::before,
   .home *::after {
     transition: none !important;
+  }
+}
+
+@media (max-width: 380px) and (max-height: 760px) {
+  .home-hero h1 {
+    font-size: 2.375rem;
+  }
+  .home-hero {
+    padding-block: 1.75rem;
   }
 }
